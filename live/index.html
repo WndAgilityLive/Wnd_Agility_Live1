@@ -1,59 +1,107 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Live</title>
-<style>
-body{font-family:Arial;margin:20px}
-table{border-collapse:collapse;width:100%}
-th,td{border-bottom:1px solid #ddd;padding:6px;text-align:left}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>D.S. CronoAgility — Live</title>
+  <style>
+    body{font-family:system-ui,Arial;margin:16px;max-width:1250px}
+    .top{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill{padding:6px 10px;border:1px solid #ddd;border-radius:999px}
+    .muted{opacity:.7}
+    input{padding:8px 10px;border:1px solid #ddd;border-radius:10px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border-bottom:1px solid #eee;padding:8px;text-align:left}
+    th{position:sticky;top:0;background:#fff;z-index:1}
+    .box{border:1px solid #e6e6e6;border-radius:14px;padding:12px;margin-top:14px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .brand img{width:38px;height:38px;border-radius:10px;border:1px solid #eee;object-fit:cover}
+  </style>
 </head>
 <body>
+  <div class="top">
+    <div class="brand">
+      <img src="../assets/logo.png" alt="D.S. CronoAgility"/>
+      <div style="font-weight:900">D.S. CronoAgility • Live</div>
+    </div>
+    <div class="pill"><b>Gara:</b> <span id="gara">-</span></div>
+    <div class="pill"><b>Categoria:</b> <span id="cat">-</span></div>
+    <div class="pill muted">Aggiornato: <span id="upd">-</span></div>
+    <input id="q" placeholder="Cerca pettorale / nome..." />
+  </div>
 
-<h2>D.S. CronoAgility Live</h2>
-
-<table>
-<thead>
-<tr>
-<th>Ordine</th>
-<th>Pettorale</th>
-<th>Concorrente</th>
-<th>Conduttore</th>
-<th>Classe</th>
-<th>Categoria</th>
-</tr>
-</thead>
-<tbody id="tb"></tbody>
-</table>
+  <div class="box">
+    <b>Ordine di partenza</b>
+    <table>
+      <thead>
+        <tr>
+          <th>Ordine</th><th>Numero Pettorale</th><th>Club</th><th>Concorrente</th><th>Razza</th><th>Paese</th><th>Conduttore</th><th>Classe</th><th>Categoria</th>
+        </tr>
+      </thead>
+      <tbody id="startTb"><tr><td colspan="9" class="muted">In attesa...</td></tr></tbody>
+    </table>
+  </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbzTyoC76wLJLa8UB-7ZoJcArDrN5ByY75sGYc4yoHRjTvCdTR2LVIb1xFu5bSya7zqJpA/exec"
+  const API_BASE = "https://script.google.com/macros/s/AKfycbzTyoC76wLJLa8UB-7ZoJcArDrN5ByY75sGYc4yoHRjTvCdTR2LVIb1xFu5bSya7zqJpA/exec";
+  const $ = (id)=>document.getElementById(id);
 
-const p=new URL(location.href).searchParams
-const gara=p.get("gara")
-const cat=p.get("cat")
+  function qs(name){
+    const u = new URL(location.href);
+    return (u.searchParams.get(name)||"").trim();
+  }
+  const gara = qs("gara");
+  const cat  = qs("cat");
+  $("gara").textContent = gara || "-";
+  $("cat").textContent  = cat  || "-";
 
-async function load(){
-let r=await fetch(API+"?gara="+encodeURIComponent(gara)+"&cat="+encodeURIComponent(cat))
-let j=await r.json()
-let tb=document.getElementById("tb")
-tb.innerHTML=""
-;(j.startlist||[]).forEach(x=>{
-let tr=document.createElement("tr")
-tr.innerHTML=`<td>${x["Ordine"]||""}</td>
-<td>${x["Numero Pettorale"]||""}</td>
-<td>${x["Concorrente"]||""}</td>
-<td>${x["Conduttore"]||""}</td>
-<td>${x["Classe"]||""}</td>
-<td>${x["Categoria"]||""}</td>`
-tb.appendChild(tr)
-})
-}
-load()
-setInterval(load,8000)
+  function esc(s){
+    return String(s??"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function norm(s){ return String(s||"").toLowerCase(); }
+
+  let cache = [];
+
+  function render(){
+    const q = norm($("q").value);
+    const list = cache.filter(x => {
+      const t = norm(x["Numero Pettorale"] ?? "") + " " + norm(x.Concorrente ?? "") + " " + norm(x.Conduttore ?? "");
+      return !q || t.includes(q);
+    });
+
+    $("startTb").innerHTML = list.length
+      ? list.sort((a,b)=>Number(a["Ordine"]||a.Ordine||0)-Number(b["Ordine"]||b.Ordine||0)).map(x=>`
+        <tr>
+          <td>${esc(x["Ordine"] ?? x.Ordine ?? "")}</td>
+          <td>${esc(x["Numero Pettorale"] ?? x["NumeroPettorale"] ?? x.bib ?? "")}</td>
+          <td>${esc(x.Club ?? "")}</td>
+          <td>${esc(x.Concorrente ?? "")}</td>
+          <td>${esc(x.Razza ?? "")}</td>
+          <td>${esc(x.Paese ?? "")}</td>
+          <td>${esc(x.Conduttore ?? "")}</td>
+          <td>${esc(x.Classe ?? "")}</td>
+          <td>${esc(x.Categoria ?? "")}</td>
+        </tr>`).join("")
+      : `<tr><td colspan="9" class="muted">Nessun dato</td></tr>`;
+  }
+
+  async function load(){
+    if(!gara || !cat){ $("upd").textContent="Manca gara/cat"; return; }
+    const url = `${API_BASE}?gara=${encodeURIComponent(gara)}&cat=${encodeURIComponent(cat)}&t=${Date.now()}`;
+    try{
+      const r = await fetch(url, {cache:"no-store"});
+      const j = await r.json();
+      cache = Array.isArray(j.startlist) ? j.startlist : [];
+      $("upd").textContent = j.serverTime ? new Date(j.serverTime).toLocaleString() : new Date().toLocaleString();
+      render();
+    }catch(e){
+      $("upd").textContent="Errore";
+    }
+  }
+
+  $("q").addEventListener("input", render);
+  load();
+  setInterval(load, 8000);
 </script>
-
 </body>
 </html>
