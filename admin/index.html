@@ -102,7 +102,7 @@
     textarea{min-height:100px;resize:vertical}
 
     .col{min-width:220px;flex:1}
-    .col.sm{min-width:160px;max-width:240px}
+    .col.sm{min-width:160px;max-width:260px}
     .col.xs{min-width:140px;max-width:220px}
 
     .btn{
@@ -158,63 +158,21 @@
     .tag{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background: rgba(0,0,0,.20);color: var(--muted);font-size:12px;font-weight:900}
     .footerNav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}
 
-    /* login overlay */
-    .overlay{
-      position:fixed;inset:0;
-      background:rgba(0,0,0,.55);
-      backdrop-filter: blur(8px);
-      display:flex;align-items:center;justify-content:center;
-      z-index:9999;
-    }
-    .loginBox{
-      width:min(520px, calc(100% - 28px));
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:22px;
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      padding:16px;
-    }
-    .loginHead{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-    .loginHead img{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.12);object-fit:cover}
-    .loginTitle{font-weight:950;font-size:18px}
+    /* modal */
+    .modalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:9999;}
+    .modalBox{max-width:900px;margin:6vh auto;background:rgba(12,16,32,.98);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.55);overflow:hidden;}
+    .modalHd{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid rgba(255,255,255,.10);}
+    .modalBd{padding:14px;}
   </style>
 </head>
 <body>
-  <!-- LOGIN OVERLAY -->
-  <div class="overlay" id="loginOverlay" style="display:none">
-    <div class="loginBox">
-      <div class="loginHead">
-        <img src="../assets/logo.png" alt="D.S. CronoAgility"/>
-        <div>
-          <div class="loginTitle">D.S. CronoAgility</div>
-          <div class="hint">Accesso Admin</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:0">
-        <div class="bd">
-          <label>Password</label>
-          <input id="loginPass" type="password" placeholder="Inserisci password..." />
-          <div class="row" style="margin-top:12px">
-            <button class="btn primary" id="loginBtn">Accedi</button>
-            <button class="btn ghost" id="logoutBtn" style="display:none">Logout</button>
-          </div>
-          <div class="hint" style="margin-top:10px">
-            Nota: questa è una protezione “UI”. La sicurezza reale è data dalla API_KEY nello script.
-          </div>
-          <div class="status bad" id="loginErr" style="display:none;margin-top:10px">Password errata.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrap" id="appRoot" style="display:none">
+  <div class="wrap">
     <div class="topbar">
       <div class="brand">
         <div class="logo"><img src="../assets/logo.png" alt="D.S. CronoAgility" /></div>
         <div class="titles">
           <div class="t">D.S. CronoAgility</div>
-          <div class="s">Admin • Startlist Online (data/evento/classe/categoria)</div>
+          <div class="s">Admin • Startlist Online (Data/Evento/Classe/Categoria)</div>
         </div>
       </div>
       <div class="badge"><span class="dot" id="apiDot"></span><span class="mono" id="apiTxt">API non configurata</span></div>
@@ -225,17 +183,12 @@
       <div class="tab" data-tab="t2">2) Evento</div>
       <div class="tab" data-tab="t3">3) Startlist</div>
       <div class="tab" data-tab="t4">4) Online</div>
-      <div style="flex:1"></div>
-      <button class="btn ghost" id="uiLogout">Logout</button>
     </div>
 
     <!-- TAB 1 -->
     <div class="card" id="t1">
       <div class="hd">
-        <div>
-          <div class="h">Connessione API</div>
-          <div class="sub">URL /exec + API_KEY (salvati nel browser)</div>
-        </div>
+        <div><div class="h">Connessione API</div><div class="sub">URL /exec + API_KEY (non hardcoded)</div></div>
         <div class="row">
           <button class="btn" id="testApi">Test</button>
           <button class="btn" id="saveApi">Salva</button>
@@ -262,10 +215,7 @@
     <!-- TAB 2 -->
     <div class="card" id="t2" style="display:none">
       <div class="hd">
-        <div>
-          <div class="h">Evento</div>
-          <div class="sub">Data + Evento + Classe + Categoria (chiave evento)</div>
-        </div>
+        <div><div class="h">Evento</div><div class="sub">Data + Evento + Classe + Categoria</div></div>
         <button class="btn" id="genKey">Mostra chiave</button>
       </div>
       <div class="bd">
@@ -307,10 +257,7 @@
     <!-- TAB 3 -->
     <div class="card" id="t3" style="display:none">
       <div class="hd">
-        <div>
-          <div class="h">Startlist</div>
-          <div class="sub">Import CSV ENCI e modifica celle</div>
-        </div>
+        <div><div class="h">Startlist</div><div class="sub">Import CSV ENCI e modifica</div></div>
         <div class="row">
           <input id="file" type="file" accept=".csv,text/csv" style="max-width:260px"/>
           <button class="btn" id="pasteBtn">Incolla CSV</button>
@@ -371,10 +318,7 @@
     <!-- TAB 4 -->
     <div class="card" id="t4" style="display:none">
       <div class="hd">
-        <div>
-          <div class="h">Online</div>
-          <div class="sub">Lista eventi • Carica • Pubblica</div>
-        </div>
+        <div><div class="h">Online</div><div class="sub">Lista eventi • Carica • Pubblica</div></div>
         <div class="row">
           <button class="btn" id="openList">Lista eventi</button>
           <button class="btn" id="loadOnline">Carica da online</button>
@@ -384,9 +328,7 @@
       </div>
       <div class="bd">
         <div class="status" id="status">Pronto.</div>
-        <div class="hint" style="margin-top:12px">
-          “Lista eventi” usa action <span class="mono">list_eventi</span> nello script.
-        </div>
+        <div class="hint" style="margin-top:12px">“Lista eventi” usa action <span class="mono">list_eventi</span> nello script.</div>
         <div class="footerNav">
           <button class="btn ghost" id="back4">← Indietro</button>
           <div class="hint">Step 4 di 4</div>
@@ -396,13 +338,13 @@
     </div>
 
     <!-- MODAL LISTA EVENTI -->
-    <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:9999;">
-      <div style="max-width:900px;margin:6vh auto;background:rgba(12,16,32,.98);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.55);overflow:hidden;">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid rgba(255,255,255,.10);">
+    <div class="modalOverlay" id="modal">
+      <div class="modalBox">
+        <div class="modalHd">
           <div style="font-weight:950">Lista Eventi</div>
           <button class="btn" id="closeList">Chiudi</button>
         </div>
-        <div style="padding:14px;">
+        <div class="modalBd">
           <div class="row" style="align-items:center;margin-bottom:10px;">
             <div class="col">
               <label>Cerca</label>
@@ -415,12 +357,8 @@
 
           <div class="tblwrap" style="max-height:420px">
             <table>
-              <thead>
-                <tr><th>Data</th><th>Evento</th><th>Classe</th><th>Categoria</th><th>Azioni</th></tr>
-              </thead>
-              <tbody id="listTb">
-                <tr><td colspan="5" class="muted">Carica elenco...</td></tr>
-              </tbody>
+              <thead><tr><th>Data</th><th>Evento</th><th>Classe</th><th>Categoria</th><th>Azioni</th></tr></thead>
+              <tbody id="listTb"><tr><td colspan="5" class="muted">Carica elenco...</td></tr></tbody>
             </table>
           </div>
 
@@ -432,51 +370,11 @@
   </div>
 
 <script>
-  // ================= LOGIN =================
-  // Scegli una password e genera hash SHA-256 (ti spiego sotto come farlo)
-  const ADMIN_PASSWORD_HASH = "7d218df56a1af98a8cae3708b794ab6bd8937d30abb8d584bc76340bbd4d639b";
-  const LS_AUTH = "ds_admin_auth_v1";
-
   const $ = (id)=>document.getElementById(id);
-
-  async function sha256hex(str){
-    const enc = new TextEncoder().encode(str);
-    const buf = await crypto.subtle.digest("SHA-256", enc);
-    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
-  }
-
-  async function tryLogin(){
-    const pass = $("loginPass").value || "";
-    const h = await sha256hex(pass);
-    if(h === ADMIN_PASSWORD_HASH){
-      localStorage.setItem(LS_AUTH, "1");
-      $("loginErr").style.display = "none";
-      showApp(true);
-    }else{
-      $("loginErr").style.display = "";
-    }
-  }
-
-  function logout(){
-    localStorage.removeItem(LS_AUTH);
-    showApp(false);
-  }
-
-  function showApp(authed){
-    $("loginOverlay").style.display = authed ? "none" : "";
-    $("appRoot").style.display = authed ? "" : "none";
-  }
-
-  $("loginBtn").addEventListener("click", tryLogin);
-  $("loginPass").addEventListener("keydown", (e)=>{ if(e.key==="Enter") tryLogin(); });
-  $("uiLogout").addEventListener("click", logout);
-
-  // ================= APP LOGIC =================
   function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
   const tabs = Array.from(document.querySelectorAll(".tab"));
   const panelIds = ["t1","t2","t3","t4"];
-
   function showTab(id){
     tabs.forEach(t=>t.classList.toggle("active", t.dataset.tab===id));
     panelIds.forEach(pid => $(pid).style.display = (pid===id) ? "" : "none");
@@ -498,7 +396,6 @@
     else if(type==="bad") el.classList.add("bad");
     else if(type==="wait") el.classList.add("wait");
   }
-
   function setApiBadge(ok, wait=false){
     const dot = $("apiDot");
     const txt = $("apiTxt");
@@ -507,7 +404,6 @@
     else { dot.className="dot bad"; txt.textContent="API non configurata"; }
   }
 
-  // ---- config local ----
   function loadCfg(){
     $("apiUrl").value = localStorage.getItem("ds_apiUrl") || "";
     $("apiKey").value = localStorage.getItem("ds_apiKey") || "";
@@ -529,22 +425,14 @@
   }
 
   function keyObj(){
-    return {
-      data: $("data").value.trim(),
-      evento: $("evento").value.trim(),
-      classe: $("classe").value.trim(),
-      categoria: $("categoria").value.trim()
-    };
+    return { data: $("data").value.trim(), evento: $("evento").value.trim(), classe: $("classe").value.trim(), categoria: $("categoria").value.trim() };
   }
   function updatePreview(){
     const k = keyObj();
-    const ok = k.data && k.evento && k.classe && k.categoria;
-    $("keyPreview").textContent = ok ? `${k.data} ${k.evento} ${k.classe} ${k.categoria}` : "—";
+    $("keyPreview").textContent = (k.data && k.evento && k.classe && k.categoria) ? `${k.data} ${k.evento} ${k.classe} ${k.categoria}` : "—";
   }
   $("genKey").addEventListener("click", ()=>{ saveCfg(); updatePreview(); });
-  ["data","evento","classe","categoria"].forEach(id=>{
-    $(id).addEventListener(id==="categoria" ? "change" : "input", updatePreview);
-  });
+  ["data","evento","classe","categoria"].forEach(id=> $(id).addEventListener(id==="categoria" ? "change" : "input", updatePreview));
 
   async function testApi(){
     const apiUrl = $("apiUrl").value.trim();
@@ -558,15 +446,14 @@
       if(j && j.ok){ setApiBadge(true); setStatus("✅ API OK.", "ok"); return true; }
       setApiBadge(false); setStatus("⛔ Risposta inattesa.", "bad"); return false;
     }catch(e){
-      setApiBadge(false); setStatus("⛔ Failed to fetch (CORS/URL): " + e.message, "bad"); return false;
+      setApiBadge(false); setStatus("⛔ Failed to fetch: " + e.message, "bad"); return false;
     }
   }
 
   $("testApi").addEventListener("click", testApi);
   $("saveApi").addEventListener("click", async ()=>{ saveCfg(); await testApi(); });
 
-  // ---- startlist table model ----
-  // Row fields (sheet): Ordine, Numero Pettorale, Concorrente, Razza, Club, Conduttore, Paese
+  // table model
   let rows = [];
   let vInfo = { badIdx:new Set(), warnIdx:new Set(), warns:0 };
 
@@ -575,9 +462,7 @@
            !String(r["Concorrente"]||"").trim() &&
            !String(r["Conduttore"]||"").trim();
   }
-  function normalizeOrd(){
-    rows.forEach((r,i)=> r["Ordine"] = String(i+1));
-  }
+  function normalizeOrd(){ rows.forEach((r,i)=> r["Ordine"]=String(i+1)); }
 
   function render(){
     $("countTag").textContent = "Righe: " + rows.length;
@@ -585,11 +470,8 @@
     $("warnTag").textContent  = "Warning: " + (vInfo.warns||0);
 
     const tb = $("tb");
-    if(!rows.length){
-      tb.innerHTML = `<tr><td colspan="8" class="muted">Nessun dato</td></tr>`;
-      return;
-    }
-    const c = (r,k)=>`<td contenteditable="true" data-k="${k}">${esc(r[k])}</td>`;
+    if(!rows.length){ tb.innerHTML = `<tr><td colspan="8" class="muted">Nessun dato</td></tr>`; return; }
+    const c=(r,k)=>`<td contenteditable="true" data-k="${k}">${esc(r[k])}</td>`;
     tb.innerHTML = rows.map((r,idx)=>{
       const cls = vInfo.badIdx.has(idx) ? "vBad" : (vInfo.warnIdx.has(idx) ? "vWarn" : "");
       return `<tr data-idx="${idx}" class="${cls}">
@@ -645,13 +527,9 @@
       else seen.set(bib,i);
     });
 
-    rows.forEach((r,i)=>{
-      const o = String(r["Ordine"]||"").trim();
-      if(o && !/^\d+$/.test(o)){ warn.add(i); warns++; }
-    });
+    rows.forEach((r,i)=>{ const o=String(r["Ordine"]||"").trim(); if(o && !/^\d+$/.test(o)){ warn.add(i); warns++; } });
 
     vInfo = { badIdx: bad, warnIdx: warn, warns };
-
     const canPublish = (bad.size===0) && rows.length>0;
     $("publish").disabled = !canPublish;
 
@@ -661,16 +539,13 @@
       else if(warns) setStatus("⚠️ OK con warning (Ordine non numerico).", "wait");
       else setStatus("✅ Validazione OK. Puoi pubblicare.", "ok");
     }
-
     render();
     return canPublish;
   }
 
-  // ---- CSV ENCI parsing ----
   function parseCsvText(text){
     const lines = text.replace(/\r/g,"").split("\n").filter(l=>l.trim().length);
     if(!lines.length) return [];
-
     const sample = lines[0];
     const delim = (sample.split(";").length > sample.split(",").length) ? ";" : ",";
 
@@ -700,14 +575,12 @@
     const iClub = idx("Club");
     const iCond = idx("Conduttore");
     const iPaese = idx("Paese");
-
     const hasHeader = (iBib>=0 || iOrd>=0);
 
     const out=[];
     for(let i=hasHeader?1:0;i<lines.length;i++){
       const cols = splitLine(lines[i]);
       const get = (j, fb="") => (j>=0 && j<cols.length) ? cols[j] : fb;
-
       const r = {
         "Ordine": get(iOrd, String(out.length+1)),
         "Numero Pettorale": get(iBib, ""),
@@ -763,12 +636,7 @@
   });
   $("clearAll").addEventListener("click", ()=>{ if(confirm("Svuotare tutta la tabella?")){ rows=[]; validate(false); }});
   $("normalize").addEventListener("click", ()=>{ normalizeOrd(); validate(true); });
-
   $("validateBtn").addEventListener("click", ()=>validate(true));
-
-  // ---- Online actions ----
-  function openModal(on){ $("modal").style.display = on ? "" : "none"; }
-  $("closeList").addEventListener("click", ()=>openModal(false));
 
   async function postApi(payload){
     const apiUrl = $("apiUrl").value.trim();
@@ -787,31 +655,20 @@
     setStatus("Caricamento da online...", "wait");
 
     try{
-      const url =
-        `${apiUrl}?data=${encodeURIComponent(k.data)}` +
-        `&evento=${encodeURIComponent(k.evento)}` +
-        `&classe=${encodeURIComponent(k.classe)}` +
-        `&categoria=${encodeURIComponent(k.categoria)}` +
-        `&t=${Date.now()}`;
-
+      const url = `${apiUrl}?data=${encodeURIComponent(k.data)}&evento=${encodeURIComponent(k.evento)}&classe=${encodeURIComponent(k.classe)}&categoria=${encodeURIComponent(k.categoria)}&t=${Date.now()}`;
       const r = await fetch(url, {cache:"no-store"});
       const j = await r.json();
       const list = Array.isArray(j.startlist) ? j.startlist : [];
-      if(!list.length){
-        rows = [];
-        validate(false);
-        setStatus("Nessuna startlist trovata online.", "bad");
-        return;
-      }
+      if(!list.length){ rows=[]; validate(false); setStatus("Nessuna startlist trovata online.", "bad"); return; }
 
       rows = list.map((x,i)=>({
-        "Ordine": str(x["Ordine"] ?? (i+1)),
-        "Numero Pettorale": str(x["Numero Pettorale"] ?? ""),
-        "Concorrente": str(x["Concorrente"] ?? ""),
-        "Razza": str(x["Razza"] ?? ""),
-        "Club": str(x["Club"] ?? ""),
-        "Conduttore": str(x["Conduttore"] ?? ""),
-        "Paese": str(x["Paese"] ?? "")
+        "Ordine": String(x["Ordine"] ?? (i+1)),
+        "Numero Pettorale": String(x["Numero Pettorale"] ?? ""),
+        "Concorrente": String(x["Concorrente"] ?? ""),
+        "Razza": String(x["Razza"] ?? ""),
+        "Club": String(x["Club"] ?? ""),
+        "Conduttore": String(x["Conduttore"] ?? ""),
+        "Paese": String(x["Paese"] ?? "")
       }));
 
       normalizeOrd();
@@ -830,7 +687,6 @@
     const apiUrl = $("apiUrl").value.trim();
     const apiKey = $("apiKey").value.trim();
     const k = keyObj();
-
     if(!apiUrl){ setStatus("Inserisci URL API (Step 1).", "bad"); showTab("t1"); return; }
     if(!apiKey){ setStatus("Inserisci API_KEY (Step 1).", "bad"); showTab("t1"); return; }
     if(!k.data||!k.evento||!k.classe||!k.categoria){ setStatus("Completa evento (Step 2).", "bad"); showTab("t2"); return; }
@@ -845,27 +701,18 @@
     try{
       const items = rows.map((r,i)=>({
         "Ordine": Number(r["Ordine"]) || (i+1),
-        "Numero Pettorale": str(r["Numero Pettorale"]).trim(),
-        "Concorrente": str(r["Concorrente"]).trim(),
-        "Razza": str(r["Razza"]).trim(),
-        "Club": str(r["Club"]).trim(),
-        "Conduttore": str(r["Conduttore"]).trim(),
-        "Paese": str(r["Paese"]).trim()
+        "Numero Pettorale": String(r["Numero Pettorale"]).trim(),
+        "Concorrente": String(r["Concorrente"]).trim(),
+        "Razza": String(r["Razza"]).trim(),
+        "Club": String(r["Club"]).trim(),
+        "Conduttore": String(r["Conduttore"]).trim(),
+        "Paese": String(r["Paese"]).trim()
       }));
 
-      const payload = {
-        key: apiKey,
-        action: "startlist_set",
-        data: k.data, evento: k.evento, classe: k.classe, categoria: k.categoria,
-        items
-      };
-
+      const payload = { key: apiKey, action:"startlist_set", data:k.data, evento:k.evento, classe:k.classe, categoria:k.categoria, items };
       const j = await postApi(payload);
-      if(j && j.ok){
-        setStatus("✅ Pubblicato online con successo.", "ok");
-      }else{
-        setStatus("Errore pubblicazione: " + (j.error || "unknown"), "bad");
-      }
+      if(j && j.ok) setStatus("✅ Pubblicato online con successo.", "ok");
+      else setStatus("Errore pubblicazione: " + (j.error || "unknown"), "bad");
     }catch(e){
       setStatus("Errore rete/API: " + e.message, "bad");
     }finally{
@@ -877,7 +724,10 @@
   $("loadOnline").addEventListener("click", loadOnline);
   $("publish").addEventListener("click", publish);
 
-  // ---- list_eventi modal ----
+  // modal list_eventi
+  function openModal(on){ $("modal").style.display = on ? "" : "none"; }
+  $("closeList").addEventListener("click", ()=>openModal(false));
+
   let cacheList = [];
   function renderList(){
     const q = String($("listQ").value||"").toLowerCase().trim();
@@ -936,20 +786,11 @@
   $("refreshList").addEventListener("click", refreshList);
   $("listQ").addEventListener("input", renderList);
 
-  // init auth + app
+  // init
   (function init(){
-    const authed = localStorage.getItem(LS_AUTH) === "1";
-    showApp(authed);
-    $("loginOverlay").style.display = authed ? "none" : "";
-    $("appRoot").style.display = authed ? "" : "none";
-
     loadCfg();
     showTab("t1");
-
-    // If you still need to set the password hash, show overlay anyway:
-    if(ADMIN_PASSWORD_HASH === "CHANGE_ME_HASH_SHA256_HEX"){
-      showApp(false);
-    }
+    updatePreview();
   })();
 </script>
 </body>
