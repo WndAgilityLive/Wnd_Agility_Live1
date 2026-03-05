@@ -47,7 +47,6 @@
     <input class="search" id="q" placeholder="Cerca pettorale/nome..." />
   </div>
 
-  <!-- 1) Prossimi a partire -->
   <div class="card">
     <h3>Prossimi a partire</h3>
     <table>
@@ -56,7 +55,6 @@
     </table>
   </div>
 
-  <!-- 2) Classifica provvisoria -->
   <div class="card">
     <h3>Classifica provvisoria</h3>
     <table>
@@ -65,7 +63,6 @@
     </table>
   </div>
 
-  <!-- 3) Ordine completo -->
   <div class="card">
     <h3>Ordine di partenza completo</h3>
     <div class="muted" style="margin:-4px 0 10px 0;font-size:12px">
@@ -78,8 +75,8 @@
   </div>
 
 <script>
-  // ✅ Usa qui un URL che funziona in GET (puoi usare anche googleusercontent)
-  const API_BASE = "INCOLLA_QUI_L_URL_API";
+  // ✅ API_BASE già impostato (googleusercontent)
+  const API_BASE = "https://script.googleusercontent.com/macros/echo?user_content_key=AY5xjrS3dZOrJuC2Y8cmes2GXauClEG0DzPg1M5n1HlCLJy5Ye6XZk1Z1d-AknZpWlsms2JSj-CkjTSuGSav_HwMdCkdEOqPGihRp61tCs-P0MVlTif3u90RrqY4-GVBS4jPTmhqjMEl8uQ7HyluYa9iMrhsUpZ-yK0YENpjyt6mRKjgTMdxrLzfYt49DqQ5SLHSfA3ez5uo8BZEXEhqS21Z1R0WR1zBysrItuW8wKEIWnVQb_0PZVa4V1kAIostvEvDQjnb9oFF3wT9TUn1u7I1cfohrvwQM6XNd7cG_VgBMqsaDQ9pmxCr6NVFm5hb-ZiLQ-tRip56WcoliIiV-usPMJtG80NFgHKicHfK1_RQ&lib=MoQEIKQJr1pOBA9Hp5bFT2xNrVEl51b0O";
 
   const $ = (id)=>document.getElementById(id);
 
@@ -102,7 +99,6 @@
   }
   function norm(s){ return String(s||"").toLowerCase(); }
 
-  // ===== Watch map (solo dispositivo) =====
   const LS_WATCH = "ds_watch_map_v1";
   const LS_FIRED = "ds_watch_fired_v1";
 
@@ -121,7 +117,7 @@
     localStorage.setItem(key, JSON.stringify(Array.from(set)));
   }
 
-  let watchedMap = loadObj(LS_WATCH); // bib -> soglia
+  let watchedMap = loadObj(LS_WATCH);
   let fired = loadSet(LS_FIRED);
 
   function beep(){
@@ -177,7 +173,6 @@
     const queue = startF.filter(r=>!doneBibs.has(String(r.bib||"").trim()));
     const next = queue.slice(0, 10);
 
-    // trigger beep based on per-row threshold
     for(let i=0;i<queue.length;i++){
       const bib = String(queue[i].bib || "").trim();
       const soglia = Number(watchedMap[bib] || 0);
@@ -229,7 +224,6 @@
       ? startF.map(watchRowHtml).join("")
       : `<tr><td colspan="6" class="muted">Nessun dato</td></tr>`;
 
-    // attach events after render
     document.querySelectorAll(".watchCb").forEach(cb=>{
       cb.addEventListener("change", ()=>{
         const bib = cb.getAttribute("data-bib");
@@ -263,10 +257,6 @@
   }
 
   async function load(){
-    if(!API_BASE || API_BASE.includes("INCOLLA_QUI")){
-      $("updLbl").textContent = "Configura API_BASE";
-      return;
-    }
     if(!data || !evento || !classe || !categoria){
       $("updLbl").textContent = "Mancano parametri URL";
       return;
