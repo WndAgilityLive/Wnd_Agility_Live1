@@ -153,7 +153,6 @@
     .tag{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background: rgba(0,0,0,.20);color: var(--muted);font-size:12px;font-weight:900}
     .footerNav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px}
 
-    /* modal */
     .modalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:9999;}
     .modalBox{max-width:900px;margin:6vh auto;background:rgba(12,16,32,.98);border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.55);overflow:hidden;}
     .modalHd{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid rgba(255,255,255,.10);}
@@ -180,10 +179,9 @@
       <div class="tab" data-tab="t4">4) Online</div>
     </div>
 
-    <!-- TAB 1 -->
     <div class="card" id="t1">
       <div class="hd">
-        <div><div class="h">Connessione API</div><div class="sub">Usa preferibilmente l’URL googleusercontent (CORS)</div></div>
+        <div><div class="h">Connessione API</div><div class="sub">POST senza preflight (text/plain) ✅</div></div>
         <div class="row">
           <button class="btn" id="testApi">Test</button>
           <button class="btn" id="saveApi">Salva</button>
@@ -192,16 +190,13 @@
       <div class="bd">
         <div class="row">
           <div class="col">
-            <label>URL API (Apps Script /exec o googleusercontent)</label>
-            <input id="apiUrl" placeholder="https://script.googleusercontent.com/macros/echo?..." />
+            <label>URL API (usa questo googleusercontent)</label>
+            <input id="apiUrl" value="https://script.googleusercontent.com/macros/echo?user_content_key=AY5xjrS3dZOrJuC2Y8cmes2GXauClEG0DzPg1M5n1HlCLJy5Ye6XZk1Z1d-AknZpWlsms2JSj-CkjTSuGSav_HwMdCkdEOqPGihRp61tCs-P0MVlTif3u90RrqY4-GVBS4jPTmhqjMEl8uQ7HyluYa9iMrhsUpZ-yK0YENpjyt6mRKjgTMdxrLzfYt49DqQ5SLHSfA3ez5uo8BZEXEhqS21Z1R0WR1zBysrItuW8wKEIWnVQb_0PZVa4V1kAIostvEvDQjnb9oFF3wT9TUn1u7I1cfohrvwQM6XNd7cG_VgBMqsaDQ9pmxCr6NVFm5hb-ZiLQ-tRip56WcoliIiV-usPMJtG80NFgHKicHfK1_RQ&lib=MoQEIKQJr1pOBA9Hp5bFT2xNrVEl51b0O" />
           </div>
           <div class="col sm">
             <label>API_KEY (Apps Script)</label>
             <input id="apiKey" type="password" placeholder="API_KEY" />
           </div>
-        </div>
-        <div class="hint" style="margin-top:10px">
-          Se vedi “Failed to fetch” sul POST, usa l’URL <span class="mono">script.googleusercontent.com</span>.
         </div>
         <div class="footerNav">
           <span class="hint">Step 1 di 4</span>
@@ -210,7 +205,6 @@
       </div>
     </div>
 
-    <!-- TAB 2 -->
     <div class="card" id="t2" style="display:none">
       <div class="hd">
         <div><div class="h">Evento</div><div class="sub">Data + Evento + Classe + Categoria</div></div>
@@ -241,7 +235,6 @@
       </div>
     </div>
 
-    <!-- TAB 3 -->
     <div class="card" id="t3" style="display:none">
       <div class="hd">
         <div><div class="h">Startlist</div><div class="sub">Import CSV ENCI e modifica</div></div>
@@ -302,7 +295,6 @@
       </div>
     </div>
 
-    <!-- TAB 4 -->
     <div class="card" id="t4" style="display:none">
       <div class="hd">
         <div><div class="h">Online</div><div class="sub">Lista eventi • Carica • Pubblica</div></div>
@@ -315,7 +307,6 @@
       </div>
       <div class="bd">
         <div class="status" id="status">Pronto.</div>
-        <div class="hint" style="margin-top:12px">“Lista eventi” usa action <span class="mono">list_eventi</span> nello script.</div>
         <div class="footerNav">
           <button class="btn ghost" id="back4">← Indietro</button>
           <div class="hint">Step 4 di 4</div>
@@ -324,7 +315,6 @@
       </div>
     </div>
 
-    <!-- MODAL LISTA EVENTI -->
     <div class="modalOverlay" id="modal">
       <div class="modalBox">
         <div class="modalHd">
@@ -348,8 +338,6 @@
               <tbody id="listTb"><tr><td colspan="5" class="muted">Carica elenco...</td></tr></tbody>
             </table>
           </div>
-
-          <div class="hint" style="margin-top:10px">Seleziona una riga per compilare automaticamente i campi evento.</div>
         </div>
       </div>
     </div>
@@ -360,7 +348,6 @@
   const $ = (id)=>document.getElementById(id);
   function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-  // tabs
   const tabs = Array.from(document.querySelectorAll(".tab"));
   const panelIds = ["t1","t2","t3","t4"];
   function showTab(id){
@@ -376,7 +363,6 @@
   $("next3").addEventListener("click", ()=>showTab("t4"));
   $("back4").addEventListener("click", ()=>showTab("t3"));
 
-  // status + badge
   function setStatus(msg, type){
     const el = $("status");
     el.textContent = msg;
@@ -393,14 +379,17 @@
     else { dot.className="dot bad"; txt.textContent="API non configurata"; }
   }
 
-  // config local
+  // load config (fallback: if localStorage empty, keep the prefilled value)
   function loadCfg(){
-    $("apiUrl").value = localStorage.getItem("ds_apiUrl") || "";
+    const savedUrl = localStorage.getItem("ds_apiUrl");
+    if(savedUrl && savedUrl.trim()) $("apiUrl").value = savedUrl.trim();
+
     $("apiKey").value = localStorage.getItem("ds_apiKey") || "";
     $("data").value = localStorage.getItem("ds_data") || "";
     $("evento").value = localStorage.getItem("ds_evento") || "";
     $("classe").value = localStorage.getItem("ds_classe") || "";
     $("categoria").value = localStorage.getItem("ds_categoria") || "Small";
+
     setApiBadge(!!$("apiUrl").value.trim());
     updatePreview();
   }
@@ -424,7 +413,6 @@
   $("genKey").addEventListener("click", ()=>{ saveCfg(); updatePreview(); });
   ["data","evento","classe","categoria"].forEach(id=> $(id).addEventListener(id==="categoria" ? "change" : "input", updatePreview));
 
-  // Test API (GET)
   async function testApi(){
     const apiUrl = $("apiUrl").value.trim();
     if(!apiUrl){ setApiBadge(false); setStatus("Inserisci URL API.", "bad"); return false; }
@@ -437,25 +425,21 @@
       if(j && j.ok){ setApiBadge(true); setStatus("✅ API OK.", "ok"); return true; }
       setApiBadge(false); setStatus("⛔ Risposta inattesa.", "bad"); return false;
     }catch(e){
-      setApiBadge(false);
-      setStatus("⛔ Failed to fetch: " + e.message, "bad");
-      return false;
+      setApiBadge(false); setStatus("⛔ Failed to fetch: " + e.message, "bad"); return false;
     }
   }
+
   $("testApi").addEventListener("click", testApi);
   $("saveApi").addEventListener("click", async ()=>{ saveCfg(); await testApi(); });
 
-  // ---------- IMPORTANT: POST without preflight ----------
+  // ✅ POST without preflight
   async function postApi(payload){
     const apiUrl = $("apiUrl").value.trim();
-
-    // Evita preflight CORS: NON usare application/json
     const r = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
-
     return await r.json();
   }
 
@@ -645,7 +629,6 @@
   $("normalize").addEventListener("click", ()=>{ normalizeOrd(); validate(true); });
   $("validateBtn").addEventListener("click", ()=>validate(true));
 
-  // Online
   async function loadOnline(){
     const apiUrl = $("apiUrl").value.trim();
     const k = keyObj();
@@ -728,7 +711,6 @@
   $("loadOnline").addEventListener("click", loadOnline);
   $("publish").addEventListener("click", publish);
 
-  // Modal list_eventi
   function openModal(on){ $("modal").style.display = on ? "" : "none"; }
   $("closeList").addEventListener("click", ()=>openModal(false));
 
