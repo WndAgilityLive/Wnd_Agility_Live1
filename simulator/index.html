@@ -448,15 +448,9 @@
   </div>
 
   <script>
-    /******************************************************************
-     * CONFIGURAZIONE
-     ******************************************************************/
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_FENLITYK6HATnjL6y1xUBTKiywrKHqaSCvzU1xWzQRZxK4X8YhUpfCQLY9KuY4x1/exec";
     const API_KEY = "Prova";
 
-    /******************************************************************
-     * STATO APPLICAZZIONE
-     ******************************************************************/
     const app = {
       events: [],
       selectedEvent: null,
@@ -469,9 +463,6 @@
       liveTimerHandle: null
     };
 
-    /******************************************************************
-     * HELPERS
-     ******************************************************************/
     function el(id){
       return document.getElementById(id);
     }
@@ -500,10 +491,6 @@
       const seconds = Math.floor((value % 60000) / 1000);
       const millis = value % 1000;
       return pad2(minutes) + ":" + pad2(seconds) + "." + String(millis).padStart(3, "0");
-    }
-
-    function isFiniteNumber(v){
-      return Number.isFinite(Number(v));
     }
 
     function toNumberOrZero(v){
@@ -603,17 +590,14 @@
     }
 
     function refreshCurrentIndex(){
-      const idx = app.startlist.findIndex(item => item.simState === "running");
-      if(idx >= 0){
-        app.currentIndex = idx;
+      const idxRunning = app.startlist.findIndex(item => item.simState === "running");
+      if(idxRunning >= 0){
+        app.currentIndex = idxRunning;
         return;
       }
       app.currentIndex = getNextPendingIndex();
     }
 
-    /******************************************************************
-     * RENDER
-     ******************************************************************/
     function renderHeader(){
       const ev = app.selectedEvent;
       setText("pillEvent", "Evento: " + currentEventLabel(ev));
@@ -656,7 +640,7 @@
         return;
       }
 
-      body.innerHTML = app.startlist.map((item, idx) => {
+      body.innerHTML = app.startlist.map(item => {
         let stateText = "Da partire";
         let rowClass = "";
 
@@ -716,9 +700,6 @@
       renderRanking();
     }
 
-    /******************************************************************
-     * TIMER
-     ******************************************************************/
     function stopLiveTimerLoop(){
       if(app.liveTimerHandle){
         clearInterval(app.liveTimerHandle);
@@ -733,53 +714,79 @@
       }, 50);
     }
 
-    /******************************************************************
-     * FETCH / APPS SCRIPT
-     ******************************************************************/
     async function apiGet(params){
       const url = APPS_SCRIPT_URL + "?" + encodeQS(params);
+
       const res = await fetch(url, {
         method: "GET",
-        cache: "no-store"
+        cache: "no-store",
+        redirect: "follow"
       });
-      const data = await res.json();
+
+      const text = await res.text();
+
+      let data = null;
+      try{
+        data = JSON.parse(text);
+      }catch(err){
+        console.error("Risposta GET non JSON valida:", text);
+        throw new Error("Risposta GET non valida");
+      }
+
       return data;
     }
 
     async function apiPost(payload){
       const res = await fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        cache: "no-store",
+        redirect: "follow",
         headers: {
           "Content-Type": "text/plain;charset=utf-8"
         },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
+
+      const text = await res.text();
+
+      let data = null;
+      try{
+        data = JSON.parse(text);
+      }catch(err){
+        console.error("Risposta POST non JSON valida:", text);
+        throw new Error("Risposta POST non valida");
+      }
+
       return data;
     }
 
-    /******************************************************************
-     * EVENTI ONLINE
-     ******************************************************************/
     async function loadEvents(){
       try{
         setConnState("warn", "Connessione: caricamento eventi...");
+
         const out = await apiGet({
           action: "list_eventi",
           key: API_KEY
         });
 
-        if(!out || !out.ok){
+        console.log("list_eventi response =", out);
+
+        if(!out || out.ok !== true){
           throw new Error(out && out.error ? out.error : "Errore list_eventi");
         }
 
         app.events = Array.isArray(out.items) ? out.items : [];
         populateEventSelect();
-        setConnState("ok", "Connessione: eventi caricati");
+
+        if(app.events.length > 0){
+          setConnState("ok", "Connessione: eventi caricati");
+        } else {
+          setConnState("warn", "Connessione: nessun evento");
+        }
       }catch(err){
-        console.error(err);
+        console.error("Errore loadEvents:", err);
         setConnState("bad", "Connessione: errore eventi");
-        alert("Errore nel caricamento eventi online.");
+        alert("Errore nel caricamento eventi online. Controlla anche la console del browser.");
       }
     }
 
@@ -799,6 +806,7 @@
 
     async function loadSelectedEvent(){
       const sel = el("eventSelect");
+
       if(!sel || sel.value === ""){
         alert("Seleziona prima un evento.");
         return;
@@ -815,6 +823,7 @@
 
       try{
         setConnState("warn", "Connessione: caricamento evento...");
+
         const out = await apiGet({
           data: ev.Data,
           evento: ev.Evento,
@@ -822,7 +831,9 @@
           categoria: ev.Categoria
         });
 
-        if(!out || !out.ok){
+        console.log("load event response =", out);
+
+        if(!out || out.ok !== true){
           throw new Error(out && out.error ? out.error : "Errore caricamento evento");
         }
 
@@ -833,12 +844,17 @@
         refreshCurrentIndex();
         resetLocalTimerOnly();
 
-        setConnState("ok", "Connessione: evento caricato");
+        if(app.startlist.length > 0){
+          setConnState("ok", "Connessione: evento caricato");
+        } else {
+          setConnState("warn", "Connessione: evento vuoto");
+        }
+
         renderAll();
       }catch(err){
-        console.error(err);
+        console.error("Errore loadSelectedEvent:", err);
         setConnState("bad", "Connessione: errore caricamento evento");
-        alert("Errore nel caricamento dei dati dell'evento.");
+        alert("Errore nel caricamento dei dati dell'evento. Controlla anche la console del browser.");
       }
     }
 
@@ -854,9 +870,6 @@
       });
     }
 
-    /******************************************************************
-     * SIMULAZIONE
-     ******************************************************************/
     function resetLocalTimerOnly(){
       app.timerRunning = false;
       app.timerStartTs = 0;
@@ -1110,9 +1123,6 @@
       setSaveState("warn", "Salvataggio ranking: non eseguito");
     }
 
-    /******************************************************************
-     * EVENTI UI
-     ******************************************************************/
     function bindUi(){
       el("btnLoadEvents").addEventListener("click", loadEvents);
       el("btnLoadSelected").addEventListener("click", loadSelectedEvent);
@@ -1138,14 +1148,12 @@
       });
     }
 
-    /******************************************************************
-     * INIT
-     ******************************************************************/
-    function init(){
+    async function init(){
       bindUi();
       renderAll();
       setConnState("warn", "Connessione: pronta");
       setSaveState("warn", "Salvataggio ranking: --");
+      await loadEvents();
     }
 
     init();
