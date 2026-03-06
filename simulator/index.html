@@ -2,59 +2,54 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
-  <title>Simulator - Agility Dog Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulator - CronoAgility</title>
   <style>
     :root{
       --bg:#0b1220;
-      --panel:#111a2b;
-      --panel-2:#162238;
-      --text:#edf3ff;
-      --muted:#9fb0cf;
-      --line:#263552;
-      --ok:#1db954;
-      --warn:#ffb020;
-      --err:#ff4d4f;
-      --accent:#56a6ff;
+      --panel:#131d31;
+      --panel2:#1a2640;
+      --line:#2b3d63;
+      --text:#eef4ff;
+      --muted:#9eb0d1;
+      --ok:#1faa59;
+      --warn:#d09a22;
+      --bad:#d94343;
+      --blue:#3d7dff;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
 
     body{
       margin:0;
       font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(180deg,#09101c 0%, #0d1524 100%);
+      background:linear-gradient(180deg,#09111d 0%, #0c1526 100%);
       color:var(--text);
     }
 
     .wrap{
-      max-width:1400px;
+      max-width:1500px;
       margin:0 auto;
       padding:16px;
     }
 
     .topbar{
       display:flex;
-      flex-wrap:wrap;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:12px;
+      flex-wrap:wrap;
       margin-bottom:16px;
     }
 
     .title{
       font-size:28px;
       font-weight:700;
-      letter-spacing:.3px;
     }
 
-    .status{
+    .statusbar{
       display:flex;
       gap:8px;
-      align-items:center;
       flex-wrap:wrap;
     }
 
@@ -64,27 +59,25 @@
       border:1px solid var(--line);
       background:rgba(255,255,255,.03);
       color:var(--muted);
-      font-size:14px;
+      font-size:13px;
     }
 
-    .pill.ok{ color:#d8ffe5; border-color:rgba(29,185,84,.4); background:rgba(29,185,84,.12); }
-    .pill.err{ color:#ffd9d9; border-color:rgba(255,77,79,.4); background:rgba(255,77,79,.12); }
-    .pill.warn{ color:#ffeac1; border-color:rgba(255,176,32,.4); background:rgba(255,176,32,.12); }
+    .pill.ok{ color:#d8ffe4; border-color:rgba(31,170,89,.45); background:rgba(31,170,89,.12); }
+    .pill.warn{ color:#ffe9bf; border-color:rgba(208,154,34,.45); background:rgba(208,154,34,.12); }
+    .pill.bad{ color:#ffd6d6; border-color:rgba(217,67,67,.45); background:rgba(217,67,67,.12); }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns:1.1fr .9fr;
       gap:16px;
     }
 
-    @media (max-width: 1050px){
-      .grid{
-        grid-template-columns:1fr;
-      }
+    @media (max-width:1100px){
+      .grid{ grid-template-columns:1fr; }
     }
 
     .card{
-      background:linear-gradient(180deg,var(--panel) 0%, var(--panel-2) 100%);
+      background:linear-gradient(180deg,var(--panel) 0%, var(--panel2) 100%);
       border:1px solid var(--line);
       border-radius:18px;
       padding:16px;
@@ -92,233 +85,310 @@
     }
 
     .card h2{
-      margin:0 0 12px 0;
+      margin:0 0 14px 0;
       font-size:20px;
     }
 
-    .timer-box{
+    .row{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin-bottom:16px;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
     }
 
-    @media (max-width: 700px){
-      .timer-box{
-        grid-template-columns:1fr;
-      }
+    @media (max-width:900px){
+      .row{ grid-template-columns:1fr 1fr; }
     }
 
-    .timer{
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:18px;
+    @media (max-width:600px){
+      .row{ grid-template-columns:1fr; }
     }
 
-    .label{
+    .field label{
+      display:block;
+      font-size:12px;
       color:var(--muted);
-      font-size:13px;
-      margin-bottom:8px;
+      margin-bottom:6px;
       text-transform:uppercase;
-      letter-spacing:.08em;
+      letter-spacing:.06em;
     }
 
-    .big{
-      font-size:56px;
-      font-weight:700;
-      line-height:1;
-      letter-spacing:1px;
-    }
-
-    .sub{
-      margin-top:8px;
-      color:var(--muted);
+    .field select,
+    .field input{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#0e1728;
+      color:var(--text);
+      outline:none;
       font-size:14px;
     }
 
-    .controls{
+    .toolbar{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      margin-top:14px;
+      margin-top:12px;
     }
 
     button{
       border:none;
       border-radius:14px;
       padding:12px 16px;
-      font-size:15px;
       font-weight:700;
+      color:#fff;
       cursor:pointer;
-      color:white;
       min-width:120px;
     }
 
-    .btn-start{ background:#1f9d55; }
-    .btn-stop{ background:#d63638; }
-    .btn-reset{ background:#405f8f; }
-    .btn-refresh{ background:#556b8c; }
+    .btn-blue{ background:var(--blue); }
+    .btn-green{ background:var(--ok); }
+    .btn-red{ background:var(--bad); }
+    .btn-yellow{ background:var(--warn); color:#1c1500; }
+    .btn-gray{ background:#52688b; }
 
-    .row{
+    .timer-wrap{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:16px;
+      gap:12px;
       margin-top:16px;
     }
 
-    @media (max-width: 900px){
-      .row{
-        grid-template-columns:1fr;
-      }
+    @media (max-width:700px){
+      .timer-wrap{ grid-template-columns:1fr; }
     }
 
-    .info-grid{
-      display:grid;
-      grid-template-columns: repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
-    @media (max-width: 700px){
-      .info-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .info{
+    .box{
       background:rgba(255,255,255,.03);
       border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px;
-      min-height:90px;
+      border-radius:16px;
+      padding:16px;
     }
 
-    .info .v{
-      font-size:22px;
+    .label{
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      margin-bottom:8px;
+    }
+
+    .big{
+      font-size:52px;
+      font-weight:700;
+      line-height:1;
+      font-family:Consolas, Monaco, monospace;
+    }
+
+    .medium{
+      font-size:24px;
       font-weight:700;
       margin-top:6px;
+    }
+
+    .small{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+    }
+
+    .actions2{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    @media (max-width:1100px){
+      .actions2{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+    }
+
+    @media (max-width:700px){
+      .actions2{ grid-template-columns:1fr 1fr; }
+    }
+
+    @media (max-width:500px){
+      .actions2{ grid-template-columns:1fr; }
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+
+    @media (max-width:900px){
+      .stats{ grid-template-columns:1fr 1fr; }
+    }
+
+    @media (max-width:500px){
+      .stats{ grid-template-columns:1fr; }
+    }
+
+    .stat{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .stat .v{
+      font-size:24px;
+      font-weight:700;
+      margin-top:8px;
     }
 
     .table-wrap{
       width:100%;
       overflow:auto;
-      border-radius:14px;
       border:1px solid var(--line);
+      border-radius:14px;
       background:rgba(255,255,255,.02);
     }
 
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:640px;
+      min-width:780px;
     }
 
     th, td{
-      padding:12px 10px;
-      text-align:left;
+      padding:10px 10px;
       border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:left;
       font-size:14px;
       vertical-align:middle;
     }
 
     th{
-      background:rgba(255,255,255,.04);
+      background:rgba(255,255,255,.05);
       color:#dce8ff;
       position:sticky;
       top:0;
       z-index:1;
     }
 
-    tr.current-row{
-      background:rgba(86,166,255,.12);
+    .current-row{
+      background:rgba(61,125,255,.15);
     }
 
-    tr.done-row{
-      opacity:.65;
+    .done-row{
+      opacity:.7;
     }
 
     .empty{
-      color:var(--muted);
       text-align:center;
+      color:var(--muted);
       padding:18px;
     }
 
-    .mono{
-      font-family:Consolas, Monaco, monospace;
-    }
-
-    .tiny{
-      font-size:12px;
-      color:var(--muted);
-    }
-
     .footer-note{
-      margin-top:12px;
       color:var(--muted);
-      font-size:13px;
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .danger{
+      color:#ffd3d3;
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="title">Simulator</div>
-      <div class="status">
-        <div id="connPill" class="pill warn">Connessione: verifica...</div>
-        <div id="sourcePill" class="pill">Sorgente: --</div>
-        <div id="lastUpdatePill" class="pill">Ultimo aggiornamento: --</div>
+      <div class="title">Simulator - CronoAgility</div>
+      <div class="statusbar">
+        <div id="pillConn" class="pill warn">Connessione: verifica...</div>
+        <div id="pillEvent" class="pill">Evento: --</div>
+        <div id="pillSave" class="pill">Salvataggio ranking: --</div>
       </div>
     </div>
 
     <div class="grid">
       <div>
         <div class="card">
-          <h2>Cronometro simulazione</h2>
-
-          <div class="timer-box">
-            <div class="timer">
-              <div class="label">Tempo corrente</div>
-              <div id="timerValue" class="big mono">00:00.000</div>
-              <div id="timerState" class="sub">Stato: fermo</div>
-            </div>
-
-            <div class="timer">
-              <div class="label">Ultimo tempo</div>
-              <div id="lastTimeValue" class="big mono">--:--.---</div>
-              <div id="currentBibText" class="sub">Pettorale corrente: --</div>
-            </div>
-          </div>
-
-          <div class="controls">
-            <button id="btnStart" class="btn-start" type="button">START</button>
-            <button id="btnStop" class="btn-stop" type="button">STOP</button>
-            <button id="btnReset" class="btn-reset" type="button">RESET</button>
-            <button id="btnRefresh" class="btn-refresh" type="button">RICARICA</button>
-          </div>
+          <h2>Selezione evento online</h2>
 
           <div class="row">
-            <div class="info-grid">
-              <div class="info">
-                <div class="label">Prossimo a partire</div>
-                <div id="nextBib" class="v">--</div>
-                <div id="nextName" class="tiny">--</div>
-              </div>
-              <div class="info">
-                <div class="label">Categoria</div>
-                <div id="nextCategory" class="v">--</div>
-                <div id="nextDog" class="tiny">--</div>
-              </div>
+            <div class="field">
+              <label>Evento disponibile</label>
+              <select id="eventSelect">
+                <option value="">-- Seleziona un evento --</option>
+              </select>
             </div>
 
-            <div class="info-grid">
-              <div class="info">
-                <div class="label">Totale partenti</div>
-                <div id="totalStartlist" class="v">0</div>
-              </div>
-              <div class="info">
-                <div class="label">Partiti / Da partire</div>
-                <div id="progressStartlist" class="v">0 / 0</div>
-              </div>
+            <div class="field">
+              <label>Data</label>
+              <input id="dataField" type="text" readonly />
+            </div>
+
+            <div class="field">
+              <label>Evento</label>
+              <input id="eventoField" type="text" readonly />
+            </div>
+
+            <div class="field">
+              <label>Classe / Categoria</label>
+              <input id="classeCategoriaField" type="text" readonly />
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button id="btnLoadEvents" class="btn-blue" type="button">Carica Eventi</button>
+            <button id="btnLoadSelected" class="btn-green" type="button">Carica Evento</button>
+            <button id="btnReloadEvent" class="btn-gray" type="button">Ricarica Dati</button>
+            <button id="btnResetSim" class="btn-red" type="button">Reset Simulazione</button>
+          </div>
+
+          <div class="footer-note">
+            Il simulator usa gli stessi dati del tuo Apps Script attuale:
+            <span class="danger">startlist</span> e <span class="danger">ranking</span>.
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <h2>Simulazione gara</h2>
+
+          <div class="timer-wrap">
+            <div class="box">
+              <div class="label">Cronometro</div>
+              <div id="timerValue" class="big">00:00.000</div>
+              <div id="timerState" class="small">Stato: fermo</div>
+            </div>
+
+            <div class="box">
+              <div class="label">Concorrente corrente</div>
+              <div id="currentBib" class="medium">--</div>
+              <div id="currentName" class="small">--</div>
+            </div>
+          </div>
+
+          <div class="actions2">
+            <button id="btnStart" class="btn-green" type="button">START</button>
+            <button id="btnStop" class="btn-red" type="button">STOP</button>
+            <button id="btnError" class="btn-yellow" type="button">Errore +5</button>
+            <button id="btnRefusal" class="btn-yellow" type="button">Rifiuto +1</button>
+            <button id="btnElim" class="btn-red" type="button">Eliminato</button>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Prossimo pettorale</div>
+              <div id="nextBib" class="v">--</div>
+            </div>
+            <div class="stat">
+              <div class="label">Totale partenti</div>
+              <div id="totalBib" class="v">0</div>
+            </div>
+            <div class="stat">
+              <div class="label">Partiti</div>
+              <div id="doneBib" class="v">0</div>
+            </div>
+            <div class="stat">
+              <div class="label">Da partire</div>
+              <div id="pendingBib" class="v">0</div>
             </div>
           </div>
         </div>
@@ -331,16 +401,16 @@
                 <tr>
                   <th>Ord.</th>
                   <th>Pett.</th>
+                  <th>Concorrente</th>
+                  <th>Razza</th>
+                  <th>Club</th>
                   <th>Conduttore</th>
-                  <th>Cane</th>
-                  <th>Categoria</th>
+                  <th>Paese</th>
                   <th>Stato</th>
                 </tr>
               </thead>
               <tbody id="startlistBody">
-                <tr>
-                  <td colspan="6" class="empty">In attesa di dati...</td>
-                </tr>
+                <tr><td colspan="8" class="empty">Nessun evento caricato</td></tr>
               </tbody>
             </table>
           </div>
@@ -349,29 +419,28 @@
 
       <div>
         <div class="card">
-          <h2>Classifica provvisoria</h2>
+          <h2>Ranking simulato</h2>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>Ord.</th>
                   <th>Pett.</th>
+                  <th>Concorrente</th>
                   <th>Conduttore</th>
-                  <th>Cane</th>
-                  <th>Categoria</th>
                   <th>Tempo</th>
-                  <th>Esito</th>
+                  <th>Errori</th>
+                  <th>Rifiuti</th>
+                  <th>Stato</th>
                 </tr>
               </thead>
               <tbody id="rankingBody">
-                <tr>
-                  <td colspan="7" class="empty">In attesa di dati...</td>
-                </tr>
+                <tr><td colspan="8" class="empty">Nessun ranking disponibile</td></tr>
               </tbody>
             </table>
           </div>
           <div class="footer-note">
-            Questa pagina prova prima il WebSocket e, se necessario, usa anche il fetch sugli endpoint.
+            A ogni STOP il ranking viene riscritto online con <strong>ranking_set</strong>.
           </div>
         </div>
       </div>
@@ -379,91 +448,41 @@
   </div>
 
   <script>
-    /* =========================
-       CONFIGURAZIONE ENDPOINT
-       ========================= */
-    const CONFIG = {
-      wsUrl: buildWsUrl(),
-      stateUrl: "/api/state",
-      startlistUrl: "/api/startlist",
-      rankingUrl: "/api/ranking",
-      commandStartUrl: "/api/sim/start",
-      commandStopUrl: "/api/sim/stop",
-      commandResetUrl: "/api/sim/reset",
-      pollMs: 1500
-    };
+    /******************************************************************
+     * CONFIGURAZIONE
+     ******************************************************************/
+    const APPS_SCRIPT_URL = "INCOLLA_QUI_LA_TUA_WEB_APP_URL";
+    const API_KEY = "Prova";
 
-    /* =========================
-       STATO APPLICAZIONE
-       ========================= */
-    const appState = {
-      connected: false,
-      ws: null,
-      lastSource: "--",
-      timerRunning: false,
-      timerMs: 0,
-      lastTimeMs: null,
-      currentBib: "",
+    /******************************************************************
+     * STATO APPLICAZZIONE
+     ******************************************************************/
+    const app = {
+      events: [],
+      selectedEvent: null,
       startlist: [],
       ranking: [],
-      nextItem: null,
-      lastUpdateTs: 0
+      currentIndex: -1,
+      timerRunning: false,
+      timerStartTs: 0,
+      timerElapsedMs: 0,
+      liveTimerHandle: null
     };
 
-    let pollHandle = null;
-    let liveTickHandle = null;
-    let timerBaseMs = 0;
-    let timerStartedAt = 0;
-
-    /* =========================
-       HELPERS DOM
-       ========================= */
+    /******************************************************************
+     * HELPERS
+     ******************************************************************/
     function el(id){
       return document.getElementById(id);
     }
 
     function setText(id, value){
       const node = el(id);
-      if (node) node.textContent = value;
+      if(node) node.textContent = value;
     }
 
-    function nowLabel(){
-      const d = new Date();
-      return d.toLocaleTimeString("it-IT");
-    }
-
-    function setConnectionUi(status, source){
-      const pill = el("connPill");
-      const sourcePill = el("sourcePill");
-
-      if (pill){
-        pill.className = "pill";
-        if (status === "ok"){
-          pill.classList.add("ok");
-          pill.textContent = "Connessione: attiva";
-        } else if (status === "err"){
-          pill.classList.add("err");
-          pill.textContent = "Connessione: assente";
-        } else {
-          pill.classList.add("warn");
-          pill.textContent = "Connessione: verifica...";
-        }
-      }
-
-      if (sourcePill){
-        sourcePill.textContent = "Sorgente: " + source;
-      }
-    }
-
-    function markUpdated(source){
-      appState.lastSource = source;
-      appState.lastUpdateTs = Date.now();
-      setText("lastUpdatePill", "Ultimo aggiornamento: " + nowLabel());
-      setConnectionUi(appState.connected ? "ok" : "warn", source);
-    }
-
-    function escapeHtml(value){
-      return String(value ?? "")
+    function escapeHtml(v){
+      return String(v ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -471,491 +490,662 @@
         .replace(/'/g, "&#039;");
     }
 
-    function firstOf(obj, keys, fallback = ""){
-      if (!obj || typeof obj !== "object") return fallback;
-      for (const key of keys){
-        if (obj[key] !== undefined && obj[key] !== null && obj[key] !== ""){
-          return obj[key];
-        }
-      }
-      return fallback;
-    }
-
-    function asNumber(value, fallback = 0){
-      const n = Number(value);
-      return Number.isFinite(n) ? n : fallback;
+    function pad2(n){
+      return String(n).padStart(2, "0");
     }
 
     function formatMs(ms){
-      if (ms === null || ms === undefined || ms === "" || isNaN(ms)) return "--:--.---";
-
-      const total = Math.max(0, Math.floor(Number(ms)));
-      const minutes = Math.floor(total / 60000);
-      const seconds = Math.floor((total % 60000) / 1000);
-      const millis = total % 1000;
-
-      return (
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0") +
-        "." +
-        String(millis).padStart(3, "0")
-      );
+      const value = Math.max(0, Number(ms || 0));
+      const minutes = Math.floor(value / 60000);
+      const seconds = Math.floor((value % 60000) / 1000);
+      const millis = value % 1000;
+      return pad2(minutes) + ":" + pad2(seconds) + "." + String(millis).padStart(3, "0");
     }
 
-    function normalizeStartItem(item, index){
-      const ordine = firstOf(item, ["ordine", "order", "ord", "ordinePartenza", "startOrder"], index + 1);
-      const pettorale = firstOf(item, ["pettorale", "bib", "numero", "num", "id"], "");
-      const conduttore = firstOf(item, ["conduttore", "handler", "nome", "nomeConduttore", "driver"], "");
-      const cane = firstOf(item, ["cane", "dog", "nomeCane", "dogName"], "");
-      const categoria = firstOf(item, ["categoria", "category", "cat", "size"], "");
-      const partito = !!firstOf(item, ["partito", "started", "done", "completed"], false);
-      const inCorso = !!firstOf(item, ["inCorso", "current", "running", "active"], false);
+    function isFiniteNumber(v){
+      return Number.isFinite(Number(v));
+    }
 
+    function toNumberOrZero(v){
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function encodeQS(obj){
+      const p = new URLSearchParams();
+      Object.keys(obj).forEach(k => p.set(k, obj[k] ?? ""));
+      return p.toString();
+    }
+
+    function currentEventLabel(ev){
+      if(!ev) return "--";
+      return `${ev.Data} | ${ev.Evento} | ${ev.Classe} | ${ev.Categoria}`;
+    }
+
+    function getEventKey(){
+      if(!app.selectedEvent) return null;
       return {
-        ordine,
-        pettorale,
-        conduttore,
-        cane,
-        categoria,
-        partito,
-        inCorso
+        data: app.selectedEvent.Data,
+        evento: app.selectedEvent.Evento,
+        classe: app.selectedEvent.Classe,
+        categoria: app.selectedEvent.Categoria
       };
     }
 
-    function normalizeRankItem(item, index){
+    function setConnState(type, text){
+      const pill = el("pillConn");
+      if(!pill) return;
+      pill.className = "pill";
+      if(type === "ok") pill.classList.add("ok");
+      else if(type === "bad") pill.classList.add("bad");
+      else pill.classList.add("warn");
+      pill.textContent = text;
+    }
+
+    function setSaveState(type, text){
+      const pill = el("pillSave");
+      if(!pill) return;
+      pill.className = "pill";
+      if(type === "ok") pill.classList.add("ok");
+      else if(type === "bad") pill.classList.add("bad");
+      else pill.classList.add("warn");
+      pill.textContent = text;
+    }
+
+    function normalizeStartlistItem(row, index){
       return {
-        posizione: firstOf(item, ["posizione", "position", "rank"], index + 1),
-        pettorale: firstOf(item, ["pettorale", "bib", "numero", "num"], ""),
-        conduttore: firstOf(item, ["conduttore", "handler", "nome", "nomeConduttore"], ""),
-        cane: firstOf(item, ["cane", "dog", "nomeCane", "dogName"], ""),
-        categoria: firstOf(item, ["categoria", "category", "cat", "size"], ""),
-        tempoMs: firstOf(item, ["tempoMs", "timeMs", "elapsedMs"], null),
-        tempo: firstOf(item, ["tempo", "time"], ""),
-        esito: firstOf(item, ["esito", "status", "result"], "")
+        data: String(row["Data"] ?? ""),
+        evento: String(row["Evento"] ?? ""),
+        classe: String(row["Classe"] ?? ""),
+        categoria: String(row["Categoria"] ?? ""),
+        ordine: Number(row["Ordine"] ?? (index + 1)),
+        bib: String(row["Numero Pettorale"] ?? ""),
+        concorrente: String(row["Concorrente"] ?? ""),
+        razza: String(row["Razza"] ?? ""),
+        club: String(row["Club"] ?? ""),
+        conduttore: String(row["Conduttore"] ?? ""),
+        paese: String(row["Paese"] ?? ""),
+        simState: "pending"
       };
     }
 
-    function extractArray(payload, preferredKeys){
-      if (Array.isArray(payload)) return payload;
+    function normalizeRankingItem(row, index){
+      return {
+        data: String(row["Data"] ?? ""),
+        evento: String(row["Evento"] ?? ""),
+        classe: String(row["Classe"] ?? ""),
+        categoria: String(row["Categoria"] ?? ""),
+        ordine: Number(row["Ordine"] ?? (index + 1)),
+        bib: String(row["Numero Pettorale"] ?? ""),
+        concorrente: String(row["Concorrente"] ?? ""),
+        razza: String(row["Razza"] ?? ""),
+        club: String(row["Club"] ?? ""),
+        conduttore: String(row["Conduttore"] ?? ""),
+        paese: String(row["Paese"] ?? ""),
+        tempo: String(row["Tempo"] ?? ""),
+        errori: toNumberOrZero(row["Errori"]),
+        rifiuti: toNumberOrZero(row["Rifiuti"]),
+        stato: String(row["Stato"] ?? "")
+      };
+    }
 
-      if (payload && typeof payload === "object"){
-        for (const key of preferredKeys){
-          if (Array.isArray(payload[key])) return payload[key];
-        }
-        if (payload.data && typeof payload.data === "object"){
-          for (const key of preferredKeys){
-            if (Array.isArray(payload.data[key])) return payload.data[key];
-          }
-        }
+    function findRankingByBib(bib){
+      return app.ranking.findIndex(r => String(r.bib) === String(bib));
+    }
+
+    function getCurrentItem(){
+      if(app.currentIndex < 0 || app.currentIndex >= app.startlist.length) return null;
+      return app.startlist[app.currentIndex];
+    }
+
+    function getNextPendingIndex(){
+      return app.startlist.findIndex(item => item.simState === "pending");
+    }
+
+    function refreshCurrentIndex(){
+      const idx = app.startlist.findIndex(item => item.simState === "running");
+      if(idx >= 0){
+        app.currentIndex = idx;
+        return;
       }
-
-      return [];
+      app.currentIndex = getNextPendingIndex();
     }
 
-    function buildWsUrl(){
-      const proto = location.protocol === "https:" ? "wss://" : "ws://";
-      return proto + location.host + "/ws";
-    }
-
-    /* =========================
-       RENDER TIMER
-       ========================= */
-    function applyTimerState(raw){
-      const running = !!firstOf(raw || {}, ["running", "timerRunning", "active"], false);
-      const currentMs = asNumber(firstOf(raw || {}, ["ms", "timeMs", "elapsedMs", "timerMs"], appState.timerMs), appState.timerMs);
-      const lastMs = firstOf(raw || {}, ["lastMs", "lastTimeMs"], appState.lastTimeMs);
-      const currentBib = firstOf(raw || {}, ["currentBib", "pettoraleCorrente", "bib"], appState.currentBib);
-
-      appState.timerRunning = running;
-      appState.timerMs = currentMs;
-      appState.lastTimeMs = lastMs === null || lastMs === undefined || lastMs === "" ? appState.lastTimeMs : Number(lastMs);
-      appState.currentBib = currentBib;
-
-      if (running){
-        timerBaseMs = currentMs;
-        timerStartedAt = Date.now();
-        startLiveTick();
-      } else {
-        stopLiveTick();
-      }
-
-      renderTimer();
-    }
-
-    function startLiveTick(){
-      stopLiveTick();
-      liveTickHandle = setInterval(() => {
-        if (!appState.timerRunning) return;
-        const elapsed = Date.now() - timerStartedAt;
-        setText("timerValue", formatMs(timerBaseMs + elapsed));
-      }, 50);
-    }
-
-    function stopLiveTick(){
-      if (liveTickHandle){
-        clearInterval(liveTickHandle);
-        liveTickHandle = null;
-      }
+    /******************************************************************
+     * RENDER
+     ******************************************************************/
+    function renderHeader(){
+      const ev = app.selectedEvent;
+      setText("pillEvent", "Evento: " + currentEventLabel(ev));
+      setText("dataField", ev ? ev.Data : "");
+      setText("eventoField", ev ? ev.Evento : "");
+      setText("classeCategoriaField", ev ? `${ev.Classe} / ${ev.Categoria}` : "");
     }
 
     function renderTimer(){
-      const shownMs = appState.timerRunning ? (timerBaseMs + (Date.now() - timerStartedAt)) : appState.timerMs;
-      setText("timerValue", formatMs(shownMs));
-      setText("lastTimeValue", appState.lastTimeMs !== null && appState.lastTimeMs !== undefined ? formatMs(appState.lastTimeMs) : "--:--.---");
-      setText("currentBibText", "Pettorale corrente: " + (appState.currentBib || "--"));
-      setText("timerState", "Stato: " + (appState.timerRunning ? "in corso" : "fermo"));
-    }
-
-    /* =========================
-       RENDER STARTLIST
-       ========================= */
-    function setStartlist(items){
-      appState.startlist = (items || []).map(normalizeStartItem);
-
-      let next = appState.startlist.find(item => !item.partito && !item.inCorso) || null;
-      if (!next){
-        next = appState.startlist.find(item => item.inCorso) || null;
+      let shown = app.timerElapsedMs;
+      if(app.timerRunning){
+        shown = Date.now() - app.timerStartTs;
       }
-      appState.nextItem = next;
+      setText("timerValue", formatMs(shown));
+      setText("timerState", "Stato: " + (app.timerRunning ? "in corso" : "fermo"));
 
-      renderStartlist();
-      renderNextUp();
+      const cur = getCurrentItem();
+      setText("currentBib", cur ? (cur.bib || "--") : "--");
+      setText("currentName", cur ? `${cur.concorrente || "--"} / ${cur.conduttore || "--"}` : "--");
     }
 
-    function renderNextUp(){
-      const next = appState.nextItem;
-      setText("nextBib", next ? String(next.pettorale || "--") : "--");
-      setText("nextName", next ? (next.conduttore || "--") : "--");
-      setText("nextCategory", next ? (next.categoria || "--") : "--");
-      setText("nextDog", next ? (next.cane || "--") : "--");
+    function renderStats(){
+      const total = app.startlist.length;
+      const done = app.startlist.filter(x => x.simState === "done").length;
+      const pending = app.startlist.filter(x => x.simState === "pending").length;
+      const next = app.startlist.find(x => x.simState === "pending");
 
-      const total = appState.startlist.length;
-      const done = appState.startlist.filter(x => x.partito).length;
-      const pending = Math.max(0, total - done);
-
-      setText("totalStartlist", String(total));
-      setText("progressStartlist", done + " / " + pending);
+      setText("nextBib", next ? (next.bib || "--") : "--");
+      setText("totalBib", String(total));
+      setText("doneBib", String(done));
+      setText("pendingBib", String(pending));
     }
 
     function renderStartlist(){
       const body = el("startlistBody");
-      if (!body) return;
+      if(!body) return;
 
-      if (!Array.isArray(appState.startlist) || appState.startlist.length === 0){
-        body.innerHTML = '<tr><td colspan="6" class="empty">Nessun ordine di partenza</td></tr>';
+      if(!app.startlist.length){
+        body.innerHTML = '<tr><td colspan="8" class="empty">Nessun evento caricato</td></tr>';
         return;
       }
 
-      body.innerHTML = appState.startlist.map(item => {
+      body.innerHTML = app.startlist.map((item, idx) => {
+        let stateText = "Da partire";
         let rowClass = "";
-        let stato = "Da partire";
 
-        if (item.inCorso){
+        if(item.simState === "running"){
+          stateText = "In corso";
           rowClass = "current-row";
-          stato = "In corso";
-        } else if (item.partito){
+        } else if(item.simState === "done"){
+          stateText = "Partito";
           rowClass = "done-row";
-          stato = "Partito";
         }
 
         return `
           <tr class="${rowClass}">
             <td>${escapeHtml(item.ordine)}</td>
-            <td>${escapeHtml(item.pettorale)}</td>
+            <td>${escapeHtml(item.bib)}</td>
+            <td>${escapeHtml(item.concorrente)}</td>
+            <td>${escapeHtml(item.razza)}</td>
+            <td>${escapeHtml(item.club)}</td>
             <td>${escapeHtml(item.conduttore)}</td>
-            <td>${escapeHtml(item.cane)}</td>
-            <td>${escapeHtml(item.categoria)}</td>
-            <td>${escapeHtml(stato)}</td>
+            <td>${escapeHtml(item.paese)}</td>
+            <td>${escapeHtml(stateText)}</td>
           </tr>
         `;
       }).join("");
-    }
-
-    /* =========================
-       RENDER RANKING
-       ========================= */
-    function setRanking(items){
-      appState.ranking = (items || []).map(normalizeRankItem);
-      renderRanking();
     }
 
     function renderRanking(){
       const body = el("rankingBody");
-      if (!body) return;
+      if(!body) return;
 
-      if (!Array.isArray(appState.ranking) || appState.ranking.length === 0){
-        body.innerHTML = '<tr><td colspan="7" class="empty">Nessuna classifica disponibile</td></tr>';
+      if(!app.ranking.length){
+        body.innerHTML = '<tr><td colspan="8" class="empty">Nessun ranking disponibile</td></tr>';
         return;
       }
 
-      body.innerHTML = appState.ranking.map((item, index) => {
-        const tempo = item.tempo
-          ? item.tempo
-          : (item.tempoMs !== null && item.tempoMs !== undefined && item.tempoMs !== "" ? formatMs(item.tempoMs) : "--:--.---");
-
+      body.innerHTML = app.ranking.map(item => {
         return `
           <tr>
-            <td>${escapeHtml(item.posizione || (index + 1))}</td>
-            <td>${escapeHtml(item.pettorale)}</td>
+            <td>${escapeHtml(item.ordine)}</td>
+            <td>${escapeHtml(item.bib)}</td>
+            <td>${escapeHtml(item.concorrente)}</td>
             <td>${escapeHtml(item.conduttore)}</td>
-            <td>${escapeHtml(item.cane)}</td>
-            <td>${escapeHtml(item.categoria)}</td>
-            <td class="mono">${escapeHtml(tempo)}</td>
-            <td>${escapeHtml(item.esito || "")}</td>
+            <td>${escapeHtml(item.tempo)}</td>
+            <td>${escapeHtml(item.errori)}</td>
+            <td>${escapeHtml(item.rifiuti)}</td>
+            <td>${escapeHtml(item.stato)}</td>
           </tr>
         `;
       }).join("");
     }
 
-    /* =========================
-       APPLICA STATO COMPLETO
-       ========================= */
-    function applyStatePayload(payload, source){
-      if (!payload || typeof payload !== "object") return;
-
-      const timerBlock =
-        payload.timer ||
-        payload.timerState ||
-        payload.state?.timer ||
-        payload.data?.timer ||
-        null;
-
-      if (timerBlock){
-        applyTimerState(timerBlock);
-      } else {
-        const flatTimer = {
-          running: firstOf(payload, ["timerRunning", "running"], appState.timerRunning),
-          ms: firstOf(payload, ["timerMs", "elapsedMs", "timeMs"], appState.timerMs),
-          lastMs: firstOf(payload, ["lastTimeMs"], appState.lastTimeMs),
-          currentBib: firstOf(payload, ["currentBib", "bib"], appState.currentBib)
-        };
-        applyTimerState(flatTimer);
-      }
-
-      const startlistArr = extractArray(payload, ["startlist", "startList", "ordinePartenza", "start_order"]);
-      if (startlistArr.length){
-        setStartlist(startlistArr);
-      }
-
-      const rankingArr = extractArray(payload, ["ranking", "classifica", "results", "resultList"]);
-      if (rankingArr.length || Array.isArray(payload.ranking) || Array.isArray(payload.classifica)){
-        setRanking(rankingArr);
-      }
-
-      markUpdated(source);
-    }
-
-    /* =========================
-       FETCH DATI
-       ========================= */
-    async function fetchJson(url){
-      const res = await fetch(url + (url.includes("?") ? "&" : "?") + "_ts=" + Date.now(), {
-        cache: "no-store"
-      });
-      if (!res.ok){
-        throw new Error("HTTP " + res.status);
-      }
-      return await res.json();
-    }
-
-    async function loadStateViaFetch(){
-      try{
-        const payload = await fetchJson(CONFIG.stateUrl);
-        appState.connected = true;
-        applyStatePayload(payload, "fetch /api/state");
-        return true;
-      } catch (err){
-        return false;
-      }
-    }
-
-    async function loadStartlistViaFetch(){
-      try{
-        const payload = await fetchJson(CONFIG.startlistUrl);
-        const items = extractArray(payload, ["items", "startlist", "startList", "ordinePartenza"]);
-        setStartlist(items);
-        markUpdated("fetch /api/startlist");
-        return true;
-      } catch (err){
-        return false;
-      }
-    }
-
-    async function loadRankingViaFetch(){
-      try{
-        const payload = await fetchJson(CONFIG.rankingUrl);
-        const items = extractArray(payload, ["items", "ranking", "classifica", "results"]);
-        setRanking(items);
-        markUpdated("fetch /api/ranking");
-        return true;
-      } catch (err){
-        return false;
-      }
-    }
-
-    async function refreshAll(){
-      let ok = false;
-
-      ok = await loadStateViaFetch() || ok;
-      ok = await loadStartlistViaFetch() || ok;
-      ok = await loadRankingViaFetch() || ok;
-
-      appState.connected = ok || appState.connected;
-
-      if (!ok && !appState.connected){
-        setConnectionUi("err", "nessuna");
-      }
-    }
-
-    /* =========================
-       WEBSOCKET
-       ========================= */
-    function connectWs(){
-      try{
-        const ws = new WebSocket(CONFIG.wsUrl);
-        appState.ws = ws;
-        setConnectionUi("warn", "websocket");
-
-        ws.onopen = () => {
-          appState.connected = true;
-          setConnectionUi("ok", "websocket");
-        };
-
-        ws.onmessage = (event) => {
-          appState.connected = true;
-
-          let msg = null;
-          try{
-            msg = JSON.parse(event.data);
-          } catch (err){
-            return;
-          }
-
-          if (!msg || typeof msg !== "object") return;
-
-          if (msg.type === "state"){
-            applyStatePayload(msg.state || msg.data || msg, "websocket state");
-            return;
-          }
-
-          if (msg.type === "startlist" || msg.type === "startList"){
-            const items = extractArray(msg, ["items", "startlist", "startList", "ordinePartenza"]);
-            setStartlist(items);
-            markUpdated("websocket startlist");
-            return;
-          }
-
-          if (msg.type === "ranking" || msg.type === "classifica"){
-            const items = extractArray(msg, ["items", "ranking", "classifica", "results"]);
-            setRanking(items);
-            markUpdated("websocket ranking");
-            return;
-          }
-
-          if (msg.type === "timer"){
-            applyTimerState(msg.timer || msg.data || msg);
-            markUpdated("websocket timer");
-            return;
-          }
-
-          applyStatePayload(msg, "websocket generic");
-        };
-
-        ws.onerror = () => {
-          setConnectionUi("warn", "websocket errore");
-        };
-
-        ws.onclose = () => {
-          appState.connected = false;
-          setConnectionUi("warn", "fetch fallback");
-          scheduleReconnect();
-        };
-      } catch (err){
-        appState.connected = false;
-        setConnectionUi("err", "errore websocket");
-      }
-    }
-
-    function scheduleReconnect(){
-      setTimeout(() => {
-        connectWs();
-      }, 2500);
-    }
-
-    /* =========================
-       COMANDI SIMULAZIONE
-       ========================= */
-    async function postCommand(url){
-      try{
-        await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ ts: Date.now() })
-        });
-      } catch (err){
-        /* niente */
-      }
-    }
-
-    /* =========================
-       EVENTI UI
-       ========================= */
-    function bindUi(){
-      const btnStart = el("btnStart");
-      const btnStop = el("btnStop");
-      const btnReset = el("btnReset");
-      const btnRefresh = el("btnRefresh");
-
-      if (btnStart){
-        btnStart.addEventListener("click", async () => {
-          await postCommand(CONFIG.commandStartUrl);
-          await refreshAll();
-        });
-      }
-
-      if (btnStop){
-        btnStop.addEventListener("click", async () => {
-          await postCommand(CONFIG.commandStopUrl);
-          await refreshAll();
-        });
-      }
-
-      if (btnReset){
-        btnReset.addEventListener("click", async () => {
-          await postCommand(CONFIG.commandResetUrl);
-          await refreshAll();
-        });
-      }
-
-      if (btnRefresh){
-        btnRefresh.addEventListener("click", async () => {
-          await refreshAll();
-        });
-      }
-    }
-
-    /* =========================
-       AVVIO
-       ========================= */
-    async function init(){
-      bindUi();
+    function renderAll(){
+      renderHeader();
       renderTimer();
+      renderStats();
       renderStartlist();
       renderRanking();
+    }
 
-      connectWs();
-      await refreshAll();
+    /******************************************************************
+     * TIMER
+     ******************************************************************/
+    function stopLiveTimerLoop(){
+      if(app.liveTimerHandle){
+        clearInterval(app.liveTimerHandle);
+        app.liveTimerHandle = null;
+      }
+    }
 
-      if (pollHandle){
-        clearInterval(pollHandle);
+    function startLiveTimerLoop(){
+      stopLiveTimerLoop();
+      app.liveTimerHandle = setInterval(() => {
+        renderTimer();
+      }, 50);
+    }
+
+    /******************************************************************
+     * FETCH / APPS SCRIPT
+     ******************************************************************/
+    async function apiGet(params){
+      const url = APPS_SCRIPT_URL + "?" + encodeQS(params);
+      const res = await fetch(url, {
+        method: "GET",
+        cache: "no-store"
+      });
+      const data = await res.json();
+      return data;
+    }
+
+    async function apiPost(payload){
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      return data;
+    }
+
+    /******************************************************************
+     * EVENTI ONLINE
+     ******************************************************************/
+    async function loadEvents(){
+      try{
+        setConnState("warn", "Connessione: caricamento eventi...");
+        const out = await apiGet({
+          action: "list_eventi",
+          key: API_KEY
+        });
+
+        if(!out || !out.ok){
+          throw new Error(out && out.error ? out.error : "Errore list_eventi");
+        }
+
+        app.events = Array.isArray(out.items) ? out.items : [];
+        populateEventSelect();
+        setConnState("ok", "Connessione: eventi caricati");
+      }catch(err){
+        console.error(err);
+        setConnState("bad", "Connessione: errore eventi");
+        alert("Errore nel caricamento eventi online.");
+      }
+    }
+
+    function populateEventSelect(){
+      const sel = el("eventSelect");
+      if(!sel) return;
+
+      sel.innerHTML = '<option value="">-- Seleziona un evento --</option>';
+
+      app.events.forEach((ev, index) => {
+        const opt = document.createElement("option");
+        opt.value = String(index);
+        opt.textContent = `${ev.Data} | ${ev.Evento} | ${ev.Classe} | ${ev.Categoria}`;
+        sel.appendChild(opt);
+      });
+    }
+
+    async function loadSelectedEvent(){
+      const sel = el("eventSelect");
+      if(!sel || sel.value === ""){
+        alert("Seleziona prima un evento.");
+        return;
       }
 
-      pollHandle = setInterval(async () => {
-        await refreshAll();
-      }, CONFIG.pollMs);
+      const ev = app.events[Number(sel.value)];
+      if(!ev){
+        alert("Evento non valido.");
+        return;
+      }
+
+      app.selectedEvent = ev;
+      renderHeader();
+
+      try{
+        setConnState("warn", "Connessione: caricamento evento...");
+        const out = await apiGet({
+          data: ev.Data,
+          evento: ev.Evento,
+          classe: ev.Classe,
+          categoria: ev.Categoria
+        });
+
+        if(!out || !out.ok){
+          throw new Error(out && out.error ? out.error : "Errore caricamento evento");
+        }
+
+        app.startlist = Array.isArray(out.startlist) ? out.startlist.map(normalizeStartlistItem) : [];
+        app.ranking = Array.isArray(out.ranking) ? out.ranking.map(normalizeRankingItem) : [];
+
+        applyRankingStateToStartlist();
+        refreshCurrentIndex();
+        resetLocalTimerOnly();
+
+        setConnState("ok", "Connessione: evento caricato");
+        renderAll();
+      }catch(err){
+        console.error(err);
+        setConnState("bad", "Connessione: errore caricamento evento");
+        alert("Errore nel caricamento dei dati dell'evento.");
+      }
+    }
+
+    function applyRankingStateToStartlist(){
+      const rankingBibSet = new Set(app.ranking.map(r => String(r.bib)));
+
+      app.startlist.forEach(item => {
+        if(rankingBibSet.has(String(item.bib))){
+          item.simState = "done";
+        } else {
+          item.simState = "pending";
+        }
+      });
+    }
+
+    /******************************************************************
+     * SIMULAZIONE
+     ******************************************************************/
+    function resetLocalTimerOnly(){
+      app.timerRunning = false;
+      app.timerStartTs = 0;
+      app.timerElapsedMs = 0;
+      stopLiveTimerLoop();
+      renderTimer();
+    }
+
+    function ensureEventLoaded(){
+      if(!app.selectedEvent){
+        alert("Carica prima un evento.");
+        return false;
+      }
+      if(!app.startlist.length){
+        alert("Questo evento non ha ordine di partenza.");
+        return false;
+      }
+      return true;
+    }
+
+    function ensureCurrentRunner(){
+      if(!ensureEventLoaded()) return false;
+
+      if(app.currentIndex < 0 || app.currentIndex >= app.startlist.length){
+        refreshCurrentIndex();
+      }
+
+      const cur = getCurrentItem();
+      if(!cur){
+        alert("Non ci sono più concorrenti da simulare.");
+        return false;
+      }
+
+      return true;
+    }
+
+    function startRun(){
+      if(!ensureCurrentRunner()) return;
+
+      const cur = getCurrentItem();
+      if(!cur) return;
+
+      if(cur.simState === "done"){
+        refreshCurrentIndex();
+      }
+
+      const cur2 = getCurrentItem();
+      if(!cur2){
+        alert("Non ci sono più concorrenti da simulare.");
+        return;
+      }
+
+      if(app.timerRunning){
+        return;
+      }
+
+      cur2.simState = "running";
+      app.timerRunning = true;
+      app.timerStartTs = Date.now();
+      app.timerElapsedMs = 0;
+
+      startLiveTimerLoop();
+      renderAll();
+    }
+
+    function ensureRankingRecordForCurrent(){
+      const cur = getCurrentItem();
+      if(!cur) return null;
+
+      let idx = findRankingByBib(cur.bib);
+
+      if(idx < 0){
+        app.ranking.push({
+          data: cur.data,
+          evento: cur.evento,
+          classe: cur.classe,
+          categoria: cur.categoria,
+          ordine: cur.ordine,
+          bib: cur.bib,
+          concorrente: cur.concorrente,
+          razza: cur.razza,
+          club: cur.club,
+          conduttore: cur.conduttore,
+          paese: cur.paese,
+          tempo: "",
+          errori: 0,
+          rifiuti: 0,
+          stato: ""
+        });
+        idx = app.ranking.length - 1;
+      }
+
+      return app.ranking[idx];
+    }
+
+    function addErrore(){
+      if(!ensureCurrentRunner()) return;
+      const cur = getCurrentItem();
+      if(!cur || cur.simState !== "running"){
+        alert("Avvia prima il concorrente con START.");
+        return;
+      }
+      const rec = ensureRankingRecordForCurrent();
+      rec.errori = toNumberOrZero(rec.errori) + 5;
+      renderRanking();
+    }
+
+    function addRifiuto(){
+      if(!ensureCurrentRunner()) return;
+      const cur = getCurrentItem();
+      if(!cur || cur.simState !== "running"){
+        alert("Avvia prima il concorrente con START.");
+        return;
+      }
+      const rec = ensureRankingRecordForCurrent();
+      rec.rifiuti = toNumberOrZero(rec.rifiuti) + 1;
+      renderRanking();
+    }
+
+    async function stopRun(eliminato){
+      if(!ensureCurrentRunner()) return;
+
+      const cur = getCurrentItem();
+      if(!cur || cur.simState !== "running"){
+        alert("Nessun concorrente attualmente in corso.");
+        return;
+      }
+
+      if(!app.timerRunning){
+        return;
+      }
+
+      app.timerElapsedMs = Date.now() - app.timerStartTs;
+      app.timerRunning = false;
+      stopLiveTimerLoop();
+
+      const rec = ensureRankingRecordForCurrent();
+      if(eliminato){
+        rec.tempo = "ELIMINATO";
+        rec.stato = "ELIMINATO";
+      } else {
+        rec.tempo = formatMs(app.timerElapsedMs);
+        rec.stato = "OK";
+      }
+
+      cur.simState = "done";
+
+      sortRankingForView();
+
+      refreshCurrentIndex();
+      resetLocalTimerOnly();
+      renderAll();
+
+      await saveRankingOnline();
+    }
+
+    function sortRankingForView(){
+      app.ranking.sort((a, b) => {
+        const aEl = String(a.stato).toUpperCase() === "ELIMINATO";
+        const bEl = String(b.stato).toUpperCase() === "ELIMINATO";
+
+        if(aEl && !bEl) return 1;
+        if(!aEl && bEl) return -1;
+
+        const aErr = toNumberOrZero(a.errori) + toNumberOrZero(a.rifiuti);
+        const bErr = toNumberOrZero(b.errori) + toNumberOrZero(b.rifiuti);
+
+        if(aErr !== bErr) return aErr - bErr;
+
+        const at = parseTimeStringToMs(a.tempo);
+        const bt = parseTimeStringToMs(b.tempo);
+
+        return at - bt;
+      });
+
+      app.ranking.forEach((item, idx) => {
+        item.ordine = idx + 1;
+      });
+    }
+
+    function parseTimeStringToMs(txt){
+      if(!txt) return 999999999;
+      if(String(txt).toUpperCase() === "ELIMINATO") return 999999999;
+      const m = String(txt).match(/^(\d+):(\d+)\.(\d+)$/);
+      if(!m) return 999999999;
+      return (Number(m[1]) * 60000) + (Number(m[2]) * 1000) + Number(m[3]);
+    }
+
+    async function saveRankingOnline(){
+      const key = getEventKey();
+      if(!key){
+        alert("Evento non selezionato.");
+        return;
+      }
+
+      try{
+        setSaveState("warn", "Salvataggio ranking: in corso...");
+
+        const items = app.ranking.map((it, idx) => ({
+          "Ordine": idx + 1,
+          "Numero Pettorale": it.bib,
+          "Concorrente": it.concorrente,
+          "Razza": it.razza,
+          "Club": it.club,
+          "Conduttore": it.conduttore,
+          "Paese": it.paese,
+          "Tempo": it.tempo,
+          "Errori": toNumberOrZero(it.errori),
+          "Rifiuti": toNumberOrZero(it.rifiuti),
+          "Stato": it.stato
+        }));
+
+        const out = await apiPost({
+          key: API_KEY,
+          action: "ranking_set",
+          data: key.data,
+          evento: key.evento,
+          classe: key.classe,
+          categoria: key.categoria,
+          items: items
+        });
+
+        if(!out || !out.ok){
+          throw new Error(out && out.error ? out.error : "Errore ranking_set");
+        }
+
+        setSaveState("ok", "Salvataggio ranking: completato");
+      }catch(err){
+        console.error(err);
+        setSaveState("bad", "Salvataggio ranking: errore");
+        alert("Errore nel salvataggio del ranking online.");
+      }
+    }
+
+    function resetSimulationLocal(){
+      if(!confirm("Vuoi resettare la simulazione locale?")) return;
+
+      stopLiveTimerLoop();
+      app.timerRunning = false;
+      app.timerStartTs = 0;
+      app.timerElapsedMs = 0;
+      app.currentIndex = -1;
+
+      app.startlist.forEach(item => {
+        item.simState = "pending";
+      });
+
+      app.ranking = [];
+      refreshCurrentIndex();
+      renderAll();
+      setSaveState("warn", "Salvataggio ranking: non eseguito");
+    }
+
+    /******************************************************************
+     * EVENTI UI
+     ******************************************************************/
+    function bindUi(){
+      el("btnLoadEvents").addEventListener("click", loadEvents);
+      el("btnLoadSelected").addEventListener("click", loadSelectedEvent);
+      el("btnReloadEvent").addEventListener("click", loadSelectedEvent);
+      el("btnResetSim").addEventListener("click", resetSimulationLocal);
+
+      el("btnStart").addEventListener("click", startRun);
+      el("btnStop").addEventListener("click", () => stopRun(false));
+      el("btnElim").addEventListener("click", () => stopRun(true));
+      el("btnError").addEventListener("click", addErrore);
+      el("btnRefusal").addEventListener("click", addRifiuto);
+
+      el("eventSelect").addEventListener("change", () => {
+        const sel = el("eventSelect");
+        if(sel.value === ""){
+          app.selectedEvent = null;
+          renderHeader();
+          return;
+        }
+        const ev = app.events[Number(sel.value)];
+        app.selectedEvent = ev || null;
+        renderHeader();
+      });
+    }
+
+    /******************************************************************
+     * INIT
+     ******************************************************************/
+    function init(){
+      bindUi();
+      renderAll();
+      setConnState("warn", "Connessione: pronta");
+      setSaveState("warn", "Salvataggio ranking: --");
     }
 
     init();
